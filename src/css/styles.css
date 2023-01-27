@@ -26,16 +26,27 @@ body {
   margin-bottom: 10px;
   display: flex;
   justify-content: center;
-  gap: 7px;
+  gap: 5px;
 }
 
 .search-input {
   height: 30px;
   border-radius: 4px;
+  border: 1px solid rgba(33, 33, 33, 0.2);
 }
 
 .search-button {
   border-radius: 4px;
+  border: 1px solid rgba(33, 33, 33, 0.2);
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: gray;
 }
 
 .container {

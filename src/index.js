@@ -37,7 +37,7 @@ function onSearch(evt) {
           foundImages(images.totalHits);
         } else {
           noImages()
-          };
+        };
 })
       .catch(error => {
      console.log(error)
@@ -83,6 +83,33 @@ function largeImages() {
   });
 }
 
+async function onLoad(entries, observer) {
+  entries.forEach(async entry => {
+    if (entry.isIntersecting) {
+      page += 1
+      const { height: cardHeight } = gallery.firstElementChild.getBoundingClientRect();
+window.scrollBy({
+  top: cardHeight * 2,
+  behavior: "smooth",
+});
+      const name = input.value;
+     await searchImages(name, page)
+        .then(images => {
+          gallery.insertAdjacentHTML("beforeend", getImages(images))
+          largeImages();
+          
+          if (images.hits.length === images.totalHits) {
+            observer.unobserve(guard);
+          }
+          if (images.totalHits <= page * 40) {
+            endOfSearch();
+          }
+        })
+        .catch(err => console.log(err))
+    }
+  })
+} 
+
 function noImages() {
   gallery.innerHTML = '';
  return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
@@ -92,20 +119,7 @@ function foundImages(totalHits) {
 return Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);  
 }
 
-function onLoad(entries, observer) {
-  entries.forEach(entry => {
-    console.log(entry);
-    if (entry.isIntersecting) {
-      page += 1
-      const name = input.value;
-      searchImages(name, page)
-        .then(images => {
-          gallery.insertAdjacentHTML("beforeend", getImages(images))
-          if (images.hits.length === images.totalHits) {
-            observer.unobserve(guard)
-          }
-        })
-        .catch(err => console.log(err))
-    }
-  })
-} 
+function endOfSearch() {
+return Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");  
+}
+
