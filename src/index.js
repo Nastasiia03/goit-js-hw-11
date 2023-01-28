@@ -4,8 +4,6 @@ import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
-// const DELAY = 300;
-
 const form = document.querySelector("#search-form");
 const input = document.querySelector(".search-input");
 const gallery = document.querySelector(".gallery");
@@ -45,11 +43,10 @@ function onSearch(evt) {
 }
 
 
-
 async function searchImages(name, page=1) {
     const key = "32968431-e7a09705e2056856a618066e0";
     const response = await axios.get(`https://pixabay.com/api/?key=${key}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`);
-    return response.data
+  return response.data
 }
 
 
@@ -102,7 +99,7 @@ window.scrollBy({
             observer.unobserve(guard);
           }
           if (images.totalHits <= page * 40) {
-            endOfSearch();
+             endOfSearch();
           }
         })
         .catch(err => console.log(err))
@@ -120,6 +117,6 @@ return Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
 }
 
 function endOfSearch() {
-return Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");  
+  return Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
 }
 
