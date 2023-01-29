@@ -17,37 +17,37 @@ let page = 1;
 let observer = new IntersectionObserver(onLoad, options);
 
 form.addEventListener("submit", onSearch);
+const lightbox = new SimpleLightbox(".gallery a", { captionsData: "alt", captionDelay: 250 }); 
 
-function onSearch(evt) {
+async function onSearch(evt) {
     evt.preventDefault();
-    const name = input.value;
+    const name = input.value.trim();
     if (name === '') {
         return (gallery.innerHTML = '');
     };
-        
-    searchImages(name)
-      .then(images => {
-        gallery.innerHTML = '';
-        if (images.hits.length !== 0) {
-          gallery.insertAdjacentHTML("beforeend", getImages(images));
-          largeImages();
-          observer.observe(guard);
-          foundImages(images.totalHits);
-        } else {
-          noImages()
-        };
-})
-      .catch(error => {
+     
+    try {
+    const images = await searchImages(name, page=1); 
+    gallery.innerHTML = '';
+    if (images.hits.length !== 0) {
+    gallery.insertAdjacentHTML("beforeend", getImages(images));
+    lightbox.refresh();
+    observer.observe(guard);
+    foundImages(images.totalHits);
+    } else {
+    noImages()
+    };} catch(error) {
      console.log(error)
-      });
+      };
 }
 
 
 async function searchImages(name, page=1) {
     const key = "32968431-e7a09705e2056856a618066e0";
     const response = await axios.get(`https://pixabay.com/api/?key=${key}&q=${name}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${page}`);
-  return response.data
-}
+  return await response.data; 
+  }
+
 
 
 function getImages(images) {
@@ -72,14 +72,6 @@ function getImages(images) {
 </div>`).join(""); 
 }
 
-function largeImages() {
-  const lightbox = new SimpleLightbox(".gallery a", { captionsData: "alt", captionDelay: 250 }); 
-  lightbox.on('show.simplelightbox', () => {
-    const link = document.querySelectorAll(".gallery__item");
-  return Array.from(link).map((event)=> `<img src="${event.getAttribute("href")}" alt="" width="800", height="600"/>`)  
-  });
-}
-
 async function onLoad(entries, observer) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
@@ -90,22 +82,23 @@ window.scrollBy({
   behavior: "smooth",
 });
       const name = input.value;
-     await searchImages(name, page)
-        .then(images => {
-          gallery.insertAdjacentHTML("beforeend", getImages(images))
-          largeImages();
+
+      try {
+      const images = await searchImages(name, page)
+      gallery.insertAdjacentHTML("beforeend", getImages(images))
+      lightbox.refresh();
           
-          if (images.hits.length === images.totalHits) {
-            observer.unobserve(guard);
-          }
-          if (images.totalHits <= page * 40) {
-             endOfSearch();
-          }
-        })
-        .catch(err => console.log(err))
+      if (images.hits.length === images.totalHits) {
+      observer.unobserve(guard);
+      }
+     if (images.totalHits <= page * 40) {
+      endOfSearch();
+      }
+        } catch(err) {
+          console.log(err)
     }
-  })
-} 
+  }
+})}
 
 function noImages() {
   gallery.innerHTML = '';
