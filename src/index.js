@@ -76,11 +76,6 @@ async function onLoad(entries, observer) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
       page += 1
-      const { height: cardHeight } = gallery.firstElementChild.getBoundingClientRect();
-window.scrollBy({
-  top: cardHeight * 2,
-  behavior: "smooth",
-});
       const name = input.value;
 
       try {
@@ -91,7 +86,7 @@ window.scrollBy({
       if (images.hits.length === images.totalHits) {
       observer.unobserve(guard);
       }
-     if (images.totalHits <= page * 40) {
+     if (images.totalHits <= page * 40 && images.totalHits !== 0) {
       endOfSearch();
       }
         } catch(err) {
